@@ -1,5 +1,14 @@
 name: AuthGate
-version: '${project.version}'
+version: 0.0.1
 main: com.MysteryGroup.Main
 api-version: 1.17
 authors: [ Sweettie, Gefesst ]
+
+commands:
+  register:
+    description: command for registrate new user
+    usage: /register [password] [password]
+  login:
+    description: command for login
+    usage: /login [password]
+

@@ -1,0 +1,4 @@
+send_global_join_message: true
+send_local_join_message: false
+range_local_join_message: 40
+wrong_pass_count: 1
