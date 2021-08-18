@@ -1,0 +1,5 @@
+name: AuthGate
+version: '${project.version}'
+main: com.MysteryGroup.Main
+api-version: 1.17
+authors: [ Sweettie, Gefesst ]
