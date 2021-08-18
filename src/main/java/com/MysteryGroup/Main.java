@@ -20,8 +20,24 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
-
+        Bukkit.getPluginManager().registerEvents(new MainListener(this),this);
+        Objects.requireNonNull(getCommand("register")).setExecutor(new Register(this));
+        Objects.requireNonNull(getCommand("login")).setExecutor(new Login(this));
+        new Thread(()->Bukkit.getPluginManager().registerEvents(new Listeners(this),this)).start();
+        File file = new File(getDataFolder()+File.separator+"config.yml");
+        if(!file.exists()){
+            file.mkdir();
+            Messages.SendMessageToConsole("Creating new config...",null);
+            getConfig().options().copyDefaults(true);
+        }
+        try {
+            send_global_join_message = getConfig().getBoolean("send_global_join_message");
+            send_local_join_message = getConfig().getBoolean("send_local_join_message");
+            wrong_pass_count = getConfig().getInt("wrong_pass_count");
+            range_local_join_message = getConfig().getInt("range_local_join_message");
+        }catch (Exception exception){
+            exception.printStackTrace();
+        }
     }
 
     @Override
