@@ -1,5 +1,6 @@
 package com.MysteryGroup.AllListeners;
 
+import com.MysteryGroup.Lang.Lang;
 import com.MysteryGroup.Main;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -24,7 +25,7 @@ public class MainListener implements Listener {
         Player player = event.getPlayer();
         if (main.send_local_join_message) sendLocalJoinMessage(player);
         if (!main.registedUser(player.getUniqueId())) player.sendMessage("plz registed");
-        else player.sendMessage("plz login");
+        else player.sendMessage(Lang.getMessage("plz_login"));
         main.needAuth.put(player, main.wrong_pass_count);
         player.setGameMode(GameMode.SPECTATOR);
     }

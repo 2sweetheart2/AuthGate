@@ -1,4 +1,6 @@
 ru:
   pls_register_by: Пожалуйста, зарегестрируйтесь с помощью команды /reg или /register [пароль] [пароль]
+  plz_login: Пожалуйста, авторизируйтесь с помощью команды /login [пароль]
 en:
   pls_register_by: Please, register by command /reg or /register [password] [password]
+  plz_login: Please, auth with command /login [password]

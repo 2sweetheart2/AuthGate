@@ -8,6 +8,7 @@ import com.MysteryGroup.Lang.Lang;
 import com.MysteryGroup.Objects.User;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -24,52 +25,80 @@ import java.util.logging.Logger;
 public final class Main extends JavaPlugin {
     public HashMap<Player, Integer> needAuth = new HashMap<>();
     public List<User> allAuth = new ArrayList<>();
+
+    public File jsonFile;
+    private final Logger log = getLogger();
+    public JsonStuff jsonStuff;
+    public static FileConfiguration config;
+
     public int wrong_pass_count;
     public boolean send_global_join_message;
     public boolean send_local_join_message;
     public int range_local_join_message;
-    public File jsonFile;
-    private Logger log = getLogger();
-    public JsonStuff jsonStuff;
-    private File langConfigFile = new File(getDataFolder()+File.separator+"lang.yml");
-    public FileConfiguration langConfig;
 
     @Override
     public void onEnable() {
-        FileStuffs();
+        cofigStuffs();
+        langFilesStuffs();
+        JsonFileSetup();
+        setConfigValues();
         try {
             allAuth = jsonStuff.read();
-        }catch (Exception e){
-            e.printStackTrace();
-            log.log(Level.WARNING,"can't read users file!!! Server will stopped!!!");
+        } catch (Exception e) {
+            log.log(Level.WARNING, "can't read users file!!! Server will stopped!!!");
             Bukkit.getServer().shutdown();
         }
         Bukkit.getPluginManager().registerEvents(new MainListener(this), this);
         Objects.requireNonNull(getCommand("register")).setExecutor(new Register(this));
         Objects.requireNonNull(getCommand("login")).setExecutor(new Login(this));
         new Thread(() -> Bukkit.getPluginManager().registerEvents(new Listeners(this), this)).start();
-        send_global_join_message = getConfig().getBoolean("send_global_join_message");
-        send_local_join_message = getConfig().getBoolean("send_local_join_message");
-        wrong_pass_count = getConfig().getInt("wrong_pass_count");
-        range_local_join_message = getConfig().getInt("range_local_join_message");
+        checkOnlinePlayers();
     }
 
-    private void FileStuffs(){
+    private void checkOnlinePlayers() {
+        List<Player> online = new ArrayList<>(Bukkit.getOnlinePlayers());
+        for (Player player : online) {
+            needAuth.put(player, wrong_pass_count);
+            player.setGameMode(GameMode.SPECTATOR);
+            if (registedUser(player.getUniqueId())) {
+                player.sendMessage(Lang.getMessage("plz_login"));
+            } else {
+                //тут оменять на plz_register (!!!она не написана в lang.yml!!!)
+                player.sendMessage(Lang.getMessage("plz_login"));
+            }
+        }
+    }
+
+    @Override
+    public void onDisable() {
+        jsonStuff.save(allAuth);
+    }
+
+    public boolean registedUser(UUID uuid) {
+        for (User user : allAuth) {
+            if (user.uuid.equals(uuid)) return true;
+        }
+        return false;
+    }
+
+    public User getUserByUUID(UUID uuid) {
+        for (User user : allAuth) {
+            if (user.uuid.equals(uuid)) return user;
+        }
+        return null;
+    }
+
+    private void cofigStuffs() {
         File file = new File(getDataFolder() + File.separator + "config.yml");
         if (!file.exists()) {
             getLogger().info("Creating new config...");
             saveDefaultConfig();
             getLogger().info("Config created!");
         }
-        if(!langConfigFile.exists()){
-            try {
-                langConfigFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        langConfig = YamlConfiguration.loadConfiguration(langConfigFile);
-        langConfig.options().copyDefaults(true);
+        config = getConfig();
+    }
+
+    private void langFilesStuffs() {
         File flang = new File(getDataFolder(), "lang.yml");
         if (!flang.exists()) {
             InputStream lang = Main.class.getResourceAsStream("/lang.yml");
@@ -77,25 +106,28 @@ public final class Main extends JavaPlugin {
                 FileOutputStream fos = new FileOutputStream(flang);
                 byte[] buff = new byte[65536];
                 int n;
-                while ((n = lang.read(buff)) > 0) {
+                while (true) {
+                    assert lang != null;
+                    if (!((n = lang.read(buff)) > 0)) break;
                     fos.write(buff, 0, n);
                     fos.flush();
                 }
                 fos.close();
-                buff = null;
             } catch (Exception e) {
                 Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Error: " + e);
             }
         }
         Lang.load(YamlConfiguration.loadConfiguration(flang));
+    }
+
+    private void JsonFileSetup() {
         jsonFile = new File(getDataFolder() + File.separator + "users.json");
         if (!jsonFile.exists()) {
             try {
                 if (!jsonFile.createNewFile()) {
                     log.log(Level.WARNING, "can't create users files\nServer will be restarting");
                     Bukkit.getServer().reload();
-                }
-                else{
+                } else {
                     jsonStuff = new JsonStuff(jsonFile);
                     jsonStuff.save(allAuth);
                     return;
@@ -107,22 +139,10 @@ public final class Main extends JavaPlugin {
         jsonStuff = new JsonStuff(jsonFile);
     }
 
-    @Override
-    public void onDisable() {
-        jsonStuff.save(allAuth);
-    }
-
-    public boolean registedUser(UUID uuid) {
-        for(User user : allAuth){
-            if(user.uuid.equals(uuid)) return true;
-        }
-        return false;
-    }
-
-    public User getUserByUUID(UUID uuid) {
-        for(User user : allAuth){
-            if(user.uuid.equals(uuid)) return user;
-        }
-        return null;
+    private void setConfigValues() {
+        send_global_join_message = getConfig().getBoolean("send_global_join_message");
+        send_local_join_message = getConfig().getBoolean("send_local_join_message");
+        wrong_pass_count = getConfig().getInt("wrong_pass_count");
+        range_local_join_message = getConfig().getInt("range_local_join_message");
     }
 }

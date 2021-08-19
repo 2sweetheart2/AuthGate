@@ -4,9 +4,7 @@ import com.MysteryGroup.Main;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.*;
 
 public class Listeners implements Listener {
     Main main;
@@ -27,19 +25,29 @@ public class Listeners implements Listener {
         if (main.needAuth.containsKey(player)) e.setCancelled(true);
     }
 
-    //
-//    @EventHandler
-//    public void dropItem(PlayerDropItemEvent e){
-//        Player player = e.getPlayer();
-//        if(main.needAuth.contains(player)) e.setCancelled(true);
-//    }
-//
-//    @EventHandler
-//    public void giveDamage(PlayerItemDamageEvent e){
-//        Player player = e.getPlayer();
-//        if(main.needAuth.contains(player)) e.setCancelled(true);
-//    }
-//
+    @EventHandler
+    public void changeGamemode(PlayerGameModeChangeEvent e) {
+        Player player = e.getPlayer();
+        if (main.needAuth.containsKey(player)) e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void tp(PlayerTeleportEvent e) {
+        Player player = e.getPlayer();
+        if (main.needAuth.containsKey(player)) e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void command(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
+        if (main.needAuth.containsKey(player)) {
+            String command = event.getMessage().replace("/", "");
+            if (!command.startsWith("login") || !command.startsWith("reg") || !command.startsWith("register")) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
     @EventHandler
     public void chat(AsyncPlayerChatEvent e) {
         Player player = e.getPlayer();
