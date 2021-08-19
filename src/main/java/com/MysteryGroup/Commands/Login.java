@@ -1,5 +1,6 @@
 package com.MysteryGroup.Commands;
 
+import com.MysteryGroup.Lang.Lang;
 import com.MysteryGroup.Main;
 import com.MysteryGroup.Messages;
 import com.MysteryGroup.Objects.User;
@@ -13,31 +14,32 @@ public class Login implements CommandExecutor {
 
     Main main;
 
-    public Login(Main main){
+    public Login(Main main) {
         this.main = main;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(!(sender instanceof Player)){
+        if (!(sender instanceof Player)) {
             sender.sendMessage("Only for Players!");
             return true;
         }
-        if(args.length<=0) return false;
+        if (args.length <= 0) return false;
         Player player = (Player) sender;
-        if(!main.needAuth.containsKey(player)){
+        if (!main.needAuth.containsKey(player)) {
             player.sendMessage("You already login!");
             return true;
         }
-        if(!main.registedUser(player.getUniqueId())){
-            Messages.SendMessageToPlayer(player,"Please, register by command /reg or /register [password] [password]");
+        if (!main.registedUser(player.getUniqueId())) {
+            Messages.SendMessageToPlayer(player, Lang.getMessage("pls_register_by"));
             return true;
         }
         User user = main.getUserByUUID(player.getUniqueId());
-        if(!args[0].toLowerCase().trim().equals(user.password)){
-            main.needAuth.put(player,main.needAuth.get(player)-1);
+        assert user != null;
+        if (!args[0].toLowerCase().trim().equals(user.password)) {
+            main.needAuth.put(player, main.needAuth.get(player) - 1);
             player.sendMessage("Wrong password!");
-            if(main.needAuth.get(player)<=0){
+            if (main.needAuth.get(player) <= 0) {
                 player.kickPlayer("Wrong passwords!");
             }
             return true;
