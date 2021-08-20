@@ -1,5 +1,16 @@
 send_global_join_message: true
 send_local_join_message: false
 range_local_join_message: 40
+# if the player exceeds this number - kick
 wrong_pass_count: 1
+# language:
 lang: ru
+
+### all about time out:
+# time out:
+enable_time_out: true
+# default 60 sec
+time_out: 60
+# default 5 sec
+message_interval: 5
+

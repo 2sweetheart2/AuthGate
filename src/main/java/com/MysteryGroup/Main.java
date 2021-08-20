@@ -6,9 +6,9 @@ import com.MysteryGroup.Commands.Login;
 import com.MysteryGroup.Commands.Register;
 import com.MysteryGroup.Lang.Lang;
 import com.MysteryGroup.Objects.User;
+import com.MysteryGroup.TimeOuts.Time;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -25,29 +25,28 @@ import java.util.logging.Logger;
 public final class Main extends JavaPlugin {
     public HashMap<Player, Integer> needAuth = new HashMap<>();
     public List<User> allAuth = new ArrayList<>();
+    public Time time = new Time();
+
 
     public File jsonFile;
     private final Logger log = getLogger();
     public JsonStuff jsonStuff;
     public static FileConfiguration config;
 
-    public int wrong_pass_count;
-    public boolean send_global_join_message;
-    public boolean send_local_join_message;
-    public int range_local_join_message;
 
     @Override
     public void onEnable() {
         cofigStuffs();
         langFilesStuffs();
         JsonFileSetup();
-        setConfigValues();
+        //попытка чтение json файла с юзерами, в случае неудачи - выключение плагина
         try {
             allAuth = jsonStuff.read();
         } catch (Exception e) {
-            log.log(Level.WARNING, "can't read users file!!! Server will stopped!!!");
-            Bukkit.getServer().shutdown();
+            log.log(Level.WARNING, "can't read users file!!! Plugin will stopped!!!");
+            Bukkit.getPluginManager().disablePlugin(this);
         }
+        //регистрация евентов и команд
         Bukkit.getPluginManager().registerEvents(new MainListener(this), this);
         Objects.requireNonNull(getCommand("register")).setExecutor(new Register(this));
         Objects.requireNonNull(getCommand("login")).setExecutor(new Login(this));
@@ -55,16 +54,10 @@ public final class Main extends JavaPlugin {
         checkOnlinePlayers();
     }
 
+    //кик всех челов в стадии "защёл но не авторизовался" (случай если сервер reload, а чел не авторизовался)
     private void checkOnlinePlayers() {
-        List<Player> online = new ArrayList<>(Bukkit.getOnlinePlayers());
-        for (Player player : online) {
-            needAuth.put(player, wrong_pass_count);
-            player.setGameMode(GameMode.SPECTATOR);
-            if (registedUser(player.getUniqueId())) {
-                player.sendMessage(Lang.getMessage("plz_login"));
-            } else {
-                player.sendMessage(Lang.getMessage("pls_register_by"));
-            }
+        for (Player player : needAuth.keySet()) {
+            player.kickPlayer("Time out!");
         }
     }
 
@@ -138,10 +131,4 @@ public final class Main extends JavaPlugin {
         jsonStuff = new JsonStuff(jsonFile);
     }
 
-    private void setConfigValues() {
-        send_global_join_message = getConfig().getBoolean("send_global_join_message");
-        send_local_join_message = getConfig().getBoolean("send_local_join_message");
-        wrong_pass_count = getConfig().getInt("wrong_pass_count");
-        range_local_join_message = getConfig().getInt("range_local_join_message");
-    }
 }
