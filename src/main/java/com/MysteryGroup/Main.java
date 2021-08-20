@@ -9,6 +9,7 @@ import com.MysteryGroup.Objects.User;
 import com.MysteryGroup.TimeOuts.Time;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -56,8 +57,21 @@ public final class Main extends JavaPlugin {
 
     //кик всех челов в стадии "защёл но не авторизовался" (случай если сервер reload, а чел не авторизовался)
     private void checkOnlinePlayers() {
-        for (Player player : needAuth.keySet()) {
-            player.kickPlayer("Time out!");
+        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+        for(Player player: players){
+            player.setGameMode(GameMode.SPECTATOR);
+            needAuth.put(player,getConfig().getInt("wrong_pass_count"));
+            if(registedUser(player.getUniqueId())){
+                player.sendMessage(Lang.getMessage("plz_login"));
+            }else{
+                player.sendMessage(Lang.getMessage("pls_register_by"));
+            }
+            //создание тайм аута
+            if (getConfig().getBoolean("enable_time_out"))
+                time.createTask(player,
+                        getConfig().getInt("time_out"), "reg or login",
+                        getConfig().getInt("message_interval"),
+                        "title", "sub title", getServer(), this);
         }
     }
 
