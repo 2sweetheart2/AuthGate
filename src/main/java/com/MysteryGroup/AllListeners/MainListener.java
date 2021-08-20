@@ -44,7 +44,7 @@ public class MainListener implements Listener {
 
         //создание тайм аута
         if (main.getConfig().getBoolean("enable_time_out"))
-            main.time.createTask(player,
+            main.timeOut.createTask(player,
                     main.getConfig().getInt("time_out"), "reg or login",
                     main.getConfig().getInt("message_interval"),
                     "title", "sub title", main.getServer(), main);

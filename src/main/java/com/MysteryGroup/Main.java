@@ -6,7 +6,7 @@ import com.MysteryGroup.Commands.Login;
 import com.MysteryGroup.Commands.Register;
 import com.MysteryGroup.Lang.Lang;
 import com.MysteryGroup.Objects.User;
-import com.MysteryGroup.TimeOuts.Time;
+import com.MysteryGroup.TimeOuts.TimeOut;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 public final class Main extends JavaPlugin {
     public HashMap<Player, Integer> needAuth = new HashMap<>();
     public List<User> allAuth = new ArrayList<>();
-    public Time time = new Time();
+    public TimeOut timeOut = new TimeOut();
 
 
     public File jsonFile;
@@ -68,7 +68,7 @@ public final class Main extends JavaPlugin {
             }
             //создание тайм аута
             if (getConfig().getBoolean("enable_time_out"))
-                time.createTask(player,
+                timeOut.createTask(player,
                         getConfig().getInt("time_out"), "reg or login",
                         getConfig().getInt("message_interval"),
                         "title", "sub title", getServer(), this);

@@ -50,7 +50,7 @@ public class Register implements CommandExecutor {
         //удаление из стадии "защёл, но не авторизовался"
         main.needAuth.remove(player);
         //удаление тайм аута
-        main.time.stopTask(player);
+        main.timeOut.stopTask(player);
         Messages.SendMessageToPlayer(player, "Welcome to the server!");
         player.setGameMode(GameMode.SURVIVAL);
         return true;

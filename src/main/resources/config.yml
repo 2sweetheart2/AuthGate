@@ -13,4 +13,5 @@ enable_time_out: true
 time_out: 60
 # default 5 sec
 message_interval: 5
+send_title:  true
 

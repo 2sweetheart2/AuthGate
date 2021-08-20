@@ -56,7 +56,7 @@ public class Login implements CommandExecutor {
         }
         player.sendMessage("Login success!");
         //убирает тайм аут игроку
-        main.time.stopTask(player);
+        main.timeOut.stopTask(player);
         //убирает его из стадии "зашёл, но не авторизовался"
         main.needAuth.remove(player);
         player.setGameMode(GameMode.SURVIVAL);
