@@ -3,6 +3,7 @@ package com.MysteryGroup.AllListeners;
 import com.MysteryGroup.Main;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 
@@ -42,9 +43,9 @@ public class Listeners implements Listener {
         Player player = event.getPlayer();
         if (main.needAuth.containsKey(player)) {
             String command = event.getMessage().replace("/", "");
-            if (!command.startsWith("login") || !command.startsWith("reg") || !command.startsWith("register")) {
-                event.setCancelled(true);
-            }
+            command = command.split(" ")[0];
+            if(command.equals("login")|| command.equals("register")||command.equals("reg")){}
+            else{event.setCancelled(true);}
         }
     }
 

@@ -63,8 +63,7 @@ public final class Main extends JavaPlugin {
             if (registedUser(player.getUniqueId())) {
                 player.sendMessage(Lang.getMessage("plz_login"));
             } else {
-                //тут оменять на plz_register (!!!она не написана в lang.yml!!!)
-                player.sendMessage(Lang.getMessage("plz_login"));
+                player.sendMessage(Lang.getMessage("pls_register_by"));
             }
         }
     }

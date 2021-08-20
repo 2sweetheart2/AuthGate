@@ -7,9 +7,11 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class MainListener implements Listener {
@@ -19,15 +21,20 @@ public class MainListener implements Listener {
         this.main = main;
     }
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.MONITOR)
+    public void login(PlayerLoginEvent e){
+        e.getPlayer().setGameMode(GameMode.SPECTATOR);
+    }
+
+    @EventHandler (priority = EventPriority.HIGHEST)
     public void join(PlayerJoinEvent event) {
         if (!main.send_global_join_message) event.setJoinMessage("");
         Player player = event.getPlayer();
+        player.setGameMode(GameMode.SPECTATOR);
         if (main.send_local_join_message) sendLocalJoinMessage(player);
         if (!main.registedUser(player.getUniqueId())) player.sendMessage("plz registed");
         else player.sendMessage(Lang.getMessage("plz_login"));
-        main.needAuth.put(player, main.wrong_pass_count);
-        player.setGameMode(GameMode.SPECTATOR);
+        if(!main.needAuth.containsKey(player)) main.needAuth.put(player, main.wrong_pass_count);
     }
 
     private void sendLocalJoinMessage(Player player) {

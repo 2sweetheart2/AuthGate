@@ -8,6 +8,7 @@ commands:
   register:
     description: command for registrate new user
     usage: /register [password] [password]
+    aliases: [reg]
   login:
     description: command for login
     usage: /login [password]
