@@ -2,6 +2,7 @@
 **EN:**
 
 AuthGate - plugin for pirated minecraft servers. Its task is to register / authorize players
+
 Version for servers on Spigot 1.12 - 1.17.1
 
 **Commands:**
@@ -25,6 +26,7 @@ ____
 **RU:**
 
 AuthGate - плагин для приватских серверов майнкрафт для авторизации/регистрации игроков
+
 Версия для серверов с ядром Spigot 1.12 - 1.17.1
 
 **Команды:**
