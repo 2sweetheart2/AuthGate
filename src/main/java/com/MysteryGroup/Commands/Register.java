@@ -1,8 +1,9 @@
 package com.MysteryGroup.Commands;
 
+import com.MysteryGroup.Lang.Lang;
 import com.MysteryGroup.Main;
-import com.MysteryGroup.Messages;
 import com.MysteryGroup.Objects.User;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -29,12 +30,12 @@ public class Register implements CommandExecutor {
         Player player = (Player) sender;
         //проверка на стадию "защёл, но не авторизовался"
         if (!main.needAuth.containsKey(player)) {
-            player.sendMessage("You already registered");
+            player.sendMessage(Lang.getMessage("already_auth"));
             return true;
         }
         //проверка зарегестрирован ли юзер
         if (main.registedUser(player.getUniqueId())) {
-            player.sendMessage("You already registered!");
+            player.sendMessage(Lang.getMessage("already_registed"));
             return true;
         }
         if (args.length != 2) return false;
@@ -42,7 +43,7 @@ public class Register implements CommandExecutor {
         String pass2 = args[1].toLowerCase().trim();
         //если два пароля не верны
         if (!pass1.equals(pass2)) {
-            player.sendMessage("Passwords must match!");
+            player.sendMessage(Lang.getMessage("must_match_pass"));
             return true;
         }
         //добавление ко всем авторизованным (кодировка пароля от плохого админа)
@@ -51,8 +52,11 @@ public class Register implements CommandExecutor {
         main.needAuth.remove(player);
         //удаление тайм аута
         main.timeOut.stopTask(player);
-        Messages.SendMessageToPlayer(player, "Welcome to the server!");
+        player.sendMessage(Lang.getMessage("success_registered"));
         player.setGameMode(GameMode.SURVIVAL);
+        Bukkit.getConsoleSender().sendMessage(String.format("The player '%s' has logged in",player.getName()));
+        //челебас почему-то разучается ходить
+        player.setWalkSpeed(0.2f);
         return true;
     }
 }

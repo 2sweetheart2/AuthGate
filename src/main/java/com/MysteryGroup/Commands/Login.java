@@ -2,8 +2,8 @@ package com.MysteryGroup.Commands;
 
 import com.MysteryGroup.Lang.Lang;
 import com.MysteryGroup.Main;
-import com.MysteryGroup.Messages;
 import com.MysteryGroup.Objects.User;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -32,12 +32,12 @@ public class Login implements CommandExecutor {
         Player player = (Player) sender;
         //если авторизован
         if (!main.needAuth.containsKey(player)) {
-            player.sendMessage("You already login!");
+            player.sendMessage(Lang.getMessage("already_auth"));
             return true;
         }
         //если не зарегестрирован
         if (!main.registedUser(player.getUniqueId())) {
-            Messages.SendMessageToPlayer(player, Lang.getMessage("pls_register_by"));
+            player.sendMessage(Lang.getMessage("plz_register_by"));
             return true;
         }
         //получение объекта User через uuid игрока
@@ -48,18 +48,21 @@ public class Login implements CommandExecutor {
         byte[] decodedBytes = Base64.getDecoder().decode(user.password);
         if (!args[0].toLowerCase().trim().equals(new String(decodedBytes))) {
             main.needAuth.put(player, main.needAuth.get(player) - 1);
-            player.sendMessage("Wrong password!");
+            player.sendMessage(Lang.getMessage("wrong_pass"));
             if (main.needAuth.get(player) <= 0) {
-                player.kickPlayer("Wrong passwords!");
+                player.kickPlayer(Lang.getMessage("wrong_pass_limit"));
             }
             return true;
         }
-        player.sendMessage("Login success!");
+        player.sendMessage(Lang.getMessage("success_login"));
         //убирает тайм аут игроку
         main.timeOut.stopTask(player);
         //убирает его из стадии "зашёл, но не авторизовался"
         main.needAuth.remove(player);
         player.setGameMode(GameMode.SURVIVAL);
+        Bukkit.getConsoleSender().sendMessage(String.format("The player '%s' has logged in", player.getName()));
+        //челебас почему-то разучается ходить
+        player.setWalkSpeed(0.2f);
         return true;
     }
 }

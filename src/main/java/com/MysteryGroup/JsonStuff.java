@@ -6,13 +6,12 @@ import org.bukkit.Bukkit;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
 public class JsonStuff {
 
-    private File jsonFile;
+    private final File jsonFile;
 
     public JsonStuff(File jsonFile) {
         this.jsonFile = jsonFile;
@@ -41,7 +40,6 @@ public class JsonStuff {
                 String name = json.get("displayName").getAsString();
                 String password = json.get("password").getAsString();
                 users.add(new User(uuid, name, password));
-                Bukkit.getLogger().info(name + " " + password);
             }
             return users;
         } catch (FileNotFoundException e) {

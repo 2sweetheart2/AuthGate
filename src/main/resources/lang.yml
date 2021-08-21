@@ -1,6 +1,21 @@
 ru:
-  pls_register_by: Пожалуйста, зарегестрируйтесь с помощью команды /reg или /register [пароль] [пароль]
+  plz_register: Пожалуйста, зарегестрируйтесь с помощью команды /reg или /register [пароль] [пароль]
   plz_login: Пожалуйста, авторизируйтесь с помощью команды /login [пароль]
+  player_join: player защёл на сервер
+  already_auth: Вы уже авторизованы!
+  already_registed: Вы уже зарегестрированы!
+  wrong_pass: Не верный пароль!
+  wrong_pass_limit: Превышен лимит неправильных паролей!
+  success_login: Вы успешно авторизованы!
+  success_registered: Вы успешно зарегистрированы!
+  must_match_pass: Пароли должны совпадать!
 en:
-  pls_register_by: Please, register by command /reg or /register [password] [password]
+  plz_register: Please, register by command /reg or /register [password] [password]
   plz_login: Please, auth with command /login [password]
+  player_join: player joined the game
+  already_auth: You are already authorized!
+  already_registed: You are already registered!
+  wrong_pass_limit: The limit of incorrect passwords has been exceeded!
+  success_login: You are successfully logged in!
+  success_registered: You have successfully registered!
+  must_match_pass: Passwords must match!

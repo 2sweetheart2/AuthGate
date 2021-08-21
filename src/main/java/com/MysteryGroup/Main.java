@@ -20,8 +20,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public final class Main extends JavaPlugin {
     public HashMap<Player, Integer> needAuth = new HashMap<>();
@@ -30,7 +28,6 @@ public final class Main extends JavaPlugin {
 
 
     public File jsonFile;
-    private final Logger log = getLogger();
     public JsonStuff jsonStuff;
     public static FileConfiguration config;
 
@@ -44,7 +41,7 @@ public final class Main extends JavaPlugin {
         try {
             allAuth = jsonStuff.read();
         } catch (Exception e) {
-            log.log(Level.WARNING, "can't read users file!!! Plugin will stopped!!!");
+            Messages.SendMessageToConsole(ChatColor.RED + "can't read users file!!! Plugin will stopped!!!");
             Bukkit.getPluginManager().disablePlugin(this);
         }
         //регистрация евентов и команд
@@ -53,25 +50,32 @@ public final class Main extends JavaPlugin {
         Objects.requireNonNull(getCommand("login")).setExecutor(new Login(this));
         new Thread(() -> Bukkit.getPluginManager().registerEvents(new Listeners(this), this)).start();
         checkOnlinePlayers();
+        Messages.SendMessageToConsole(ChatColor.GREEN+"AuthGate is working!");
     }
 
     //кик всех челов в стадии "защёл но не авторизовался" (случай если сервер reload, а чел не авторизовался)
     private void checkOnlinePlayers() {
         List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
-        for(Player player: players){
+        for (Player player : players) {
             player.setGameMode(GameMode.SPECTATOR);
-            needAuth.put(player,getConfig().getInt("wrong_pass_count"));
-            if(registedUser(player.getUniqueId())){
+            String text;
+            String message;
+            needAuth.put(player, getConfig().getInt("wrong_pass_count"));
+            if (registedUser(player.getUniqueId())) {
                 player.sendMessage(Lang.getMessage("plz_login"));
-            }else{
-                player.sendMessage(Lang.getMessage("pls_register_by"));
+                text = "/login [password]";
+                message = Lang.getMessage("plz_login");
+            } else {
+                player.sendMessage(Lang.getMessage("plz_register"));
+                text = "/reg [password] [password]";
+                message = Lang.getMessage("plz_register");
             }
             //создание тайм аута
             if (getConfig().getBoolean("enable_time_out"))
                 timeOut.createTask(player,
-                        getConfig().getInt("time_out"), "reg or login",
+                        getConfig().getInt("time_out"), message,
                         getConfig().getInt("message_interval"),
-                        "title", "sub title", getServer(), this);
+                        text, "", getServer(), this);
         }
     }
 
@@ -97,9 +101,9 @@ public final class Main extends JavaPlugin {
     private void cofigStuffs() {
         File file = new File(getDataFolder() + File.separator + "config.yml");
         if (!file.exists()) {
-            getLogger().info("Creating new config...");
+            Messages.SendMessageToConsole(ChatColor.AQUA + "Creating new config...");
             saveDefaultConfig();
-            getLogger().info("Config created!");
+            Messages.SendMessageToConsole(ChatColor.AQUA + "Config created!");
         }
         config = getConfig();
     }
@@ -123,7 +127,7 @@ public final class Main extends JavaPlugin {
                 Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Error: " + e);
             }
         }
-        Lang.load(YamlConfiguration.loadConfiguration(flang));
+        if(!Lang.load(YamlConfiguration.loadConfiguration(flang))) Bukkit.getPluginManager().disablePlugin(this);
     }
 
     private void JsonFileSetup() {
@@ -131,8 +135,8 @@ public final class Main extends JavaPlugin {
         if (!jsonFile.exists()) {
             try {
                 if (!jsonFile.createNewFile()) {
-                    log.log(Level.WARNING, "can't create users files\nServer will be restarting");
-                    Bukkit.getServer().reload();
+                    Messages.SendMessageToConsole(ChatColor.RED + "can't create users files!!! Plugin will be disable!!!");
+                    Bukkit.getServer().getPluginManager().disablePlugin(this);
                 } else {
                     jsonStuff = new JsonStuff(jsonFile);
                     jsonStuff.save(allAuth);
@@ -144,5 +148,6 @@ public final class Main extends JavaPlugin {
         }
         jsonStuff = new JsonStuff(jsonFile);
     }
+
 
 }

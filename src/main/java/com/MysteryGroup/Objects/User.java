@@ -13,9 +13,4 @@ public class User {
         this.password = password;
     }
 
-    public User(String uuid, String displayName, String password) {
-        this.uuid = UUID.fromString(uuid);
-        this.displayName = displayName;
-        this.password = password;
-    }
 }
