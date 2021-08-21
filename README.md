@@ -1,4 +1,4 @@
-# <p align="center">AuthGate 1.0</p>
+# <p align="center">AuthGate 1.0.0</p>
 **EN:**
 
 AuthGate - plugin for pirated minecraft servers. Its task is to register / authorize players
